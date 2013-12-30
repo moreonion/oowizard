@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\wizard;
+namespace Drupal\oowizard;
 
 /**
  * One step in a multi-step form.

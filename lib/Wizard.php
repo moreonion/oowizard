@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\wizard;
+namespace Drupal\oowizard;
 
 /**
  * Baseclass for multi-step forms.
@@ -21,13 +21,13 @@ abstract class Wizard {
     foreach ($this->steps as $urlpart => $class) {
       $this->stepHandlers[$urlpart] = $step = new $class($this);
       $forms[$urlpart] = array(
-        'form id' => 'wizard_step_form',
+        'form id' => 'oowizard_step_form',
         'title' => $step->getTitle(),
       );
     }
 
     $this->formInfo = array(
-      'id' => 'wizard_form',
+      'id' => 'oowizard_form',
       'path' => NULL,
       'show trail' => FALSE,
       'show back' => TRUE,
@@ -40,7 +40,7 @@ abstract class Wizard {
     $form_state['step handler'] = $this->stepHandlers[$this->currentStep];
     ctools_include('wizard');
     $form = ctools_wizard_multistep_form($this->formInfo, $this->currentStep, $form_state);
-    $form['#validate'] = 'wizard_step_form_validate';
+    $form['#validate'] = 'oowizard_step_form_validate';
 
     return $form;
   }
@@ -62,7 +62,7 @@ abstract class Wizard {
 
   public function trail() {
     return array(
-      '#theme' => array('wizard_trail__' . $this->formInfo['id'], 'wizard_trail'),
+      '#theme' => array('oowizard_trail__' . $this->formInfo['id'], 'oowizard_trail'),
       '#trail' => $this->trailItems(),
     );
   }
