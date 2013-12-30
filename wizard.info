@@ -1,0 +1,7 @@
+name = Wizard
+description = Form wizard - OOP API to support building multistep forms
+core = 7.x
+
+dependencies[] = ctools
+dependencies[] = psr0
+
