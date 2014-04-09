@@ -13,6 +13,8 @@ abstract class Wizard {
   public $user;
   public $formInfo;
 
+  protected $step;
+
   public function __construct($user) {
     $this->user = $user ? $user : $GLOBALS['user'];
 
@@ -21,7 +23,7 @@ abstract class Wizard {
     foreach ($this->steps as $urlpart => $class) {
       $this->stepHandlers[$urlpart] = $step = new $class($this);
       $forms[$urlpart] = array(
-        'form id' => 'oowizard_step_form',
+        'form id' => 'oowizard_form',
         'title' => $step->getTitle(),
       );
     }
@@ -37,12 +39,15 @@ abstract class Wizard {
 
   public function wizardForm() {
     $form_state = array();
-    $form_state['step handler'] = $this->stepHandlers[$this->currentStep];
+    $form_state['oowizard'] = $this;
     ctools_include('wizard');
     $form = ctools_wizard_multistep_form($this->formInfo, $this->currentStep, $form_state);
-    $form['#validate'] = 'oowizard_step_form_validate';
-
+    $form['#validate'] = 'oowizard_form_validate';
     return $form;
+  }
+
+  public function form($form, &$form_state) {
+    return $this->step->stepForm($form, $form_state);
   }
 
   public function trailItems() {
@@ -67,13 +72,33 @@ abstract class Wizard {
     );
   }
 
+  protected function setStep($step) {
+    $this->currentStep = $step;
+    $this->step = $this->stepHandlers[$step];
+  }
+
   public function run($step) {
     // return 404 if the form step is unknown
     if (!isset($this->steps[$step])) {
       return drupal_not_found();
     }
-    $this->currentStep = $step;
-    return $this->stepHandlers[$step]->pageCallback();
+    $this->setStep($step);
+    return $this->step->pageCallback();
   }
 
+  public function validate($form, &$form_state) {
+    $this->step->validateStep($form, $form_state);
+  }
+
+  public function next(&$form_state) {
+    $this->step->submitStep($form_state['complete form'], $form_state);
+  }
+  public function finish(&$form_state) {
+    $this->step->submitStep($form_state['complete form'], $form_state);
+  }
+  public function ret(&$form_state) {
+    $this->step->submitStep($form_state['complete form'], $form_state);
+  }
+  public function cancel(&$form_state) {
+  }
 }

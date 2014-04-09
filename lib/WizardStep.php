@@ -7,7 +7,7 @@ namespace Drupal\oowizard;
  */
 abstract class WizardStep {
   protected $title = 'Wizard Step';
-
+  protected $wizard;
   public function __construct($wizard) {
     $this->wizard = $wizard;
     $this->loadIncludes();
