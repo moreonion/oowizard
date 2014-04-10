@@ -14,6 +14,7 @@ abstract class Wizard {
   public $formInfo;
 
   protected $step;
+  protected $buttonType;
 
   public function __construct($user) {
     $this->user = $user ? $user : $GLOBALS['user'];
@@ -42,7 +43,9 @@ abstract class Wizard {
     $form_state['oowizard'] = $this;
     ctools_include('wizard');
     $form = ctools_wizard_multistep_form($this->formInfo, $this->currentStep, $form_state);
-    $form['#validate'] = 'oowizard_form_validate';
+    $form['#validate'] = array('oowizard_form_validate');
+    // We need our own submit handler to be called befor ctools_wizard_submit.
+    $form['#submit'] = array('oowizard_form_submit');
     return $form;
   }
 
@@ -87,18 +90,13 @@ abstract class Wizard {
   }
 
   public function validate($form, &$form_state) {
-    $this->step->validateStep($form, $form_state);
+    if (isset($form_state['clicked_button']['#wizard type'])) {
+      $this->buttonType = $form_state['clicked_button']['#wizard type'];
+    }
+    $this->step->validateStep($form, $form_state, $this->buttonType);
   }
 
-  public function next(&$form_state) {
-    $this->step->submitStep($form_state['complete form'], $form_state);
-  }
-  public function finish(&$form_state) {
-    $this->step->submitStep($form_state['complete form'], $form_state);
-  }
-  public function ret(&$form_state) {
-    $this->step->submitStep($form_state['complete form'], $form_state);
-  }
-  public function cancel(&$form_state) {
+  public function submit($form, &$form_state) {
+    $this->step->submitStep($form, $form_state, $this->buttonType);
   }
 }

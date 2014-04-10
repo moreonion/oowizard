@@ -20,38 +20,10 @@ function oowizard_form_validate($form, &$form_state) {
 }
 
 /**
- * Called when the add page process is finished.
+ * Submit callback.
  */
-function oowizard_form_finish(&$form_state) {
-  return $form_state['oowizard']->finish($form_state);
-}
-
-/**
- * Called when the 'back' button is clicked.
- */
-function oowizard_form_back(&$form_state) {
-  return $form_state['oowizard']->back($form_state);
-}
-
-/**
- * Called when the 'next' button is clicked.
- */
-function oowizard_form_next(&$form_state) {
-  return $form_state['oowizard']->next($form_state);
-}
-
-/**
- * Called when the 'cancel' button is clicked.
- */
-function oowizard_form_cancel(&$form_state) {
-  return $form_state['oowizard']->cancel($form_state);
-}
-
-/**
- * Called when the 'return' button is clicked.
- */
-function oowizard_form_return(&$form_state) {
-  return $form_state['oowizard']->ret($form_state);
+function oowizard_form_submit($form, &$form_state) {
+  $form_state['oowizard']->submit($form, $form_state);
 }
 
 /**
